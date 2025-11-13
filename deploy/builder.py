@@ -2,8 +2,8 @@
 
 from pathlib import Path
 from typing import Optional
-from google.cloud import cloudbuild_v1
-from google.cloud.devtools.cloudbuild_v1 import Build, BuildStep, Source, StorageSource
+from google.cloud.devtools import cloudbuild_v1
+from google.cloud.devtools.cloudbuild_v1.types import Build, BuildStep, Source, StorageSource
 from google.cloud import storage
 from google.api_core import exceptions
 from rich.console import Console
@@ -29,11 +29,11 @@ class CloudBuilder:
 
     async def build_service(self, service_name: str, service_path: Path,
                            version: str) -> str:
-        """Build service using Cloud Build with buildpacks"""
+        """Build service using Cloud Build"""
 
         image_name = self.config.get_image_url(service_name, version)
 
-        console.print(f'[cyan]🔨 Building {service_name}@{version}...[/cyan]')
+        console.print(f'[cyan]Building {service_name}@{version}...[/cyan]')
 
         # Ensure artifact registry repository exists
         await self.registry.ensure_repository()
@@ -56,19 +56,30 @@ class CloudBuilder:
             )
         )
 
-        # Use buildpacks for automatic detection (no Dockerfile needed!)
-        build.steps = [
-            BuildStep(
-                name='gcr.io/k8s-skaffold/pack',
-                args=[
-                    'build',
-                    image_name,
-                    '--builder', 'gcr.io/buildpacks/builder:v1',
-                    '--path', '.',
-                    '--cache-image', f'{image_name}-cache'
-                ]
-            )
-        ]
+        # Check if Dockerfile exists
+        dockerfile_path = service_path / 'Dockerfile'
+        if dockerfile_path.exists():
+            # Use Docker build
+            build.steps = [
+                BuildStep(
+                    name='gcr.io/cloud-builders/docker',
+                    args=['build', '-t', image_name, '.']
+                )
+            ]
+        else:
+            # Use buildpacks for automatic detection
+            build.steps = [
+                BuildStep(
+                    name='gcr.io/k8s-skaffold/pack',
+                    args=[
+                        'build',
+                        image_name,
+                        '--builder', 'gcr.io/buildpacks/builder:v1',
+                        '--path', '.',
+                        '--publish'
+                    ]
+                )
+            ]
 
         # Output images
         build.images = [image_name]
@@ -98,16 +109,16 @@ class CloudBuilder:
                 result = operation.result(timeout=600)  # 10 min timeout
 
             except Exception as e:
-                console.print(f'[red]✗ Build failed: {e}[/red]')
+                console.print(f'[red]X Build failed: {e}[/red]')
                 raise
 
         # Check build status
         if result.status == Build.Status.SUCCESS:
-            console.print(f'[green]✓ Built {image_name}[/green]')
+            console.print(f'[green]+ Built {image_name}[/green]')
             return image_name
         else:
             error_msg = result.failure_info.detail if result.failure_info else 'Unknown error'
-            console.print(f'[red]✗ Build failed: {error_msg}[/red]')
+            console.print(f'[red]X Build failed: {error_msg}[/red]')
 
             # Try to get logs
             if result.log_url:
@@ -144,7 +155,7 @@ class CloudBuilder:
         tar_buffer.seek(0)
         blob.upload_from_file(tar_buffer, content_type='application/gzip')
 
-        console.print(f'[dim]✓ Uploaded source ({len(tar_buffer.getvalue()) // 1024} KB)[/dim]')
+        console.print(f'[dim]+ Uploaded source ({len(tar_buffer.getvalue()) // 1024} KB)[/dim]')
 
     def get_build_logs(self, build_id: str) -> str:
         """Get logs for a specific build"""

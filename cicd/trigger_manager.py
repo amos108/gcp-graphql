@@ -1,7 +1,7 @@
 """Cloud Build Trigger Manager using Google Cloud APIs"""
 
-from google.cloud import cloudbuild_v1
-from google.cloud.devtools.cloudbuild_v1 import (
+from google.cloud.devtools import cloudbuild_v1
+from google.cloud.devtools.cloudbuild_v1.types import (
     BuildTrigger,
     GitFileSource,
     RepoSource,
@@ -73,17 +73,17 @@ class TriggerManager:
 
         try:
             created_trigger = self.client.create_build_trigger(
-                parent=self.parent,
-                build_trigger=trigger
+                project_id=self.project_id,
+                trigger=trigger
             )
 
-            console.print(f'[green]✓ Created trigger: {config.name}[/green]')
+            console.print(f'[green]Created trigger: {config.name}[/green]')
             console.print(f'[dim]  ID: {created_trigger.id}[/dim]')
 
             return created_trigger.id
 
         except Exception as e:
-            console.print(f'[red]✗ Failed to create trigger: {e}[/red]')
+            console.print(f'[red]Failed to create trigger: {e}[/red]')
             raise
 
     def create_base_image_triggers(self) -> List[str]:
@@ -145,7 +145,7 @@ class TriggerManager:
         )
         triggers.append(self.create_trigger(go_config))
 
-        console.print(f'\n[green]✓ Created {len(triggers)} base image triggers[/green]')
+        console.print(f'\n[green]Created {len(triggers)} base image triggers[/green]')
         return triggers
 
     def create_service_trigger(self, service_name: str) -> str:
@@ -183,7 +183,7 @@ class TriggerManager:
         console.print(f'\n[bold]Build Triggers in {self.project_id}[/bold]\n')
 
         try:
-            triggers = list(self.client.list_build_triggers(parent=self.parent))
+            triggers = list(self.client.list_build_triggers(project_id=self.project_id))
 
             if not triggers:
                 console.print('[yellow]No triggers found[/yellow]')
@@ -213,7 +213,7 @@ class TriggerManager:
 
         try:
             self.client.delete_build_trigger(name=trigger_name)
-            console.print(f'[green]✓ Deleted trigger: {trigger_id}[/green]')
+            console.print(f'[green]Deleted trigger: {trigger_id}[/green]')
 
         except exceptions.NotFound:
             console.print(f'[yellow]Trigger not found: {trigger_id}[/yellow]')
@@ -249,7 +249,7 @@ class TriggerManager:
             )
 
             build = operation.metadata.build
-            console.print(f'[green]✓ Build started: {build.id}[/green]')
+            console.print(f'[green]Build started: {build.id}[/green]')
             console.print(f'[dim]  Log URL: {build.log_url}[/dim]')
 
             return build.id
@@ -261,7 +261,7 @@ class TriggerManager:
     def _get_trigger_by_name(self, name: str) -> Optional[BuildTrigger]:
         """Get trigger by name"""
         try:
-            triggers = list(self.client.list_build_triggers(parent=self.parent))
+            triggers = list(self.client.list_build_triggers(project_id=self.project_id))
             for trigger in triggers:
                 if trigger.name == name:
                     return trigger
@@ -286,7 +286,7 @@ class TriggerManager:
             updated = self.client.update_build_trigger(
                 build_trigger=trigger
             )
-            console.print(f'[green]✓ Updated trigger: {config.name}[/green]')
+            console.print(f'[green]Updated trigger: {config.name}[/green]')
             return updated.id
 
         except Exception as e:
@@ -295,11 +295,11 @@ class TriggerManager:
 
     def setup_all_triggers(self):
         """Set up all CI/CD triggers"""
-        console.print('\n[bold]🚀 Setting up CI/CD triggers[/bold]\n')
+        console.print('\n[bold]Setting up CI/CD triggers[/bold]\n')
 
         # Create base image triggers
         self.create_base_image_triggers()
 
-        console.print('\n[green]✅ CI/CD setup complete![/green]')
+        console.print('\n[green]CI/CD setup complete![/green]')
         console.print('\n[dim]Triggers are manual-run only.[/dim]')
         console.print('[dim]To enable automatic builds, connect a Git repository.[/dim]')

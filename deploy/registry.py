@@ -68,7 +68,7 @@ class ArtifactRegistry:
         try:
             # Try to get existing repository
             self.client.get_repository(name=repo_path)
-            console.print(f'[dim]✓ Repository {repository_name} exists[/dim]')
+            console.print(f'[dim]+ Repository {repository_name} exists[/dim]')
 
         except exceptions.NotFound:
             # Create repository
@@ -87,7 +87,7 @@ class ArtifactRegistry:
 
             # Wait for creation to complete
             operation.result(timeout=300)
-            console.print(f'[green]✓ Created repository {repository_name}[/green]')
+            console.print(f'[green]+ Created repository {repository_name}[/green]')
 
         except Exception as e:
             console.print(f'[red]Error with repository: {e}[/red]')
@@ -135,7 +135,7 @@ class ArtifactRegistry:
         try:
             operation = self.client.delete_version(name=version_path)
             operation.result(timeout=60)
-            console.print(f'[green]✓ Deleted {image_name}:{version}[/green]')
+            console.print(f'[green]+ Deleted {image_name}:{version}[/green]')
 
         except exceptions.NotFound:
             console.print(f'[yellow]Version not found: {image_name}:{version}[/yellow]')

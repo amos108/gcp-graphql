@@ -9,7 +9,8 @@
       "Bash(pip install:*)",
       "Bash(python -m pip install:*)",
       "Bash(powershell:*)",
-      "Bash(gcloud builds list:*)"
+      "Bash(gcloud builds list:*)",
+      "Bash(python -m cicd.cli:*)"
     ],
     "deny": [],
     "ask": []

@@ -24,7 +24,7 @@ class CloudRunDeployer:
                             env: str, config: Dict) -> str:
         """Deploy service to Cloud Run"""
 
-        console.print(f'[cyan]🚀 Deploying {service_name} to {env}...[/cyan]')
+        console.print(f'[cyan] Deploying {service_name} to {env}...[/cyan]')
 
         # Construct service resource name
         parent = f'projects/{self.config.project_id}/locations/{self.config.region}'
@@ -60,7 +60,7 @@ class CloudRunDeployer:
         # Traffic routing (100% to latest revision)
         service.traffic = [
             TrafficTarget(
-                type_=TrafficTarget.TrafficTargetAllocationType.TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST,
+                type_=run_v2.TrafficTargetAllocationType.TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST,
                 percent=100
             )
         ]
@@ -83,8 +83,7 @@ class CloudRunDeployer:
                 if service_exists:
                     # Update existing service
                     operation = self.client.update_service(
-                        service=service,
-                        allow_missing=False
+                        service=service
                     )
                 else:
                     # Create new service
@@ -98,13 +97,13 @@ class CloudRunDeployer:
                 result = operation.result(timeout=600)  # 10 min timeout
 
             except Exception as e:
-                console.print(f'[red]✗ Deployment failed: {e}[/red]')
+                console.print(f'[red]X Deployment failed: {e}[/red]')
                 raise
 
         # Get service URL
         url = result.uri
 
-        console.print(f'[green]✓ Deployed to {url}[/green]')
+        console.print(f'[green]+ Deployed to {url}[/green]')
 
         # Set IAM policy for public access (if configured)
         if config.get('allow_unauthenticated', True):
@@ -160,7 +159,7 @@ class CloudRunDeployer:
             )
 
             self.client.set_iam_policy(request=set_policy_request)
-            console.print('[dim]✓ Enabled public access[/dim]')
+            console.print('[dim]+ Enabled public access[/dim]')
 
         except Exception as e:
             console.print(f'[yellow]Warning: Could not set public access: {e}[/yellow]')
@@ -211,7 +210,7 @@ class CloudRunDeployer:
             operation = self.client.delete_service(name=service_path)
             operation.result(timeout=300)
 
-            console.print(f'[green]✓ Deleted {service_name}[/green]')
+            console.print(f'[green]+ Deleted {service_name}[/green]')
 
         except exceptions.NotFound:
             console.print(f'[yellow]Service not found: {service_name}[/yellow]')

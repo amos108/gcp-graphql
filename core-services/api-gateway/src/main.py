@@ -11,13 +11,44 @@ from contextlib import asynccontextmanager
 import sys
 from pathlib import Path
 
-# Add playground SDK to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'shared' / 'python'))
+# Simple implementations replacing playground_sdk
+import logging
+from contextvars import ContextVar
+import uuid
 
-from playground_sdk import RunContext, setup_logging, setup_tracing
+def setup_logging(service_name: str, level: str = 'INFO'):
+    """Simple logging setup"""
+    logger = logging.getLogger(service_name)
+    logger.setLevel(getattr(logging, level.upper()))
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        ))
+        logger.addHandler(handler)
+    return logger
+
+def setup_tracing(service_name: str):
+    """Simple tracer setup (no-op for now)"""
+    return None
+
+class RunContext:
+    """Simple run context for tracking request IDs"""
+    _current: ContextVar['RunContext'] = ContextVar('run_context', default=None)
+
+    def __init__(self, run_id: str = None):
+        self.run_id = run_id or str(uuid.uuid4())
+
+    @classmethod
+    def set_current(cls, context: 'RunContext'):
+        cls._current.set(context)
+
+    @classmethod
+    def get_current(cls) -> 'RunContext':
+        return cls._current.get()
 
 # Import service discovery
-from service_registry import ServiceRegistry
+from .service_registry import ServiceRegistry
 
 logger = setup_logging('api-gateway', level=os.getenv('LOG_LEVEL', 'INFO'))
 tracer = setup_tracing('api-gateway')
@@ -196,7 +227,7 @@ if __name__ == "__main__":
     port = int(os.getenv('PORT', 8080))
 
     uvicorn.run(
-        "main:app",
+        "src.main:app",
         host="0.0.0.0",
         port=port,
         reload=os.getenv('DEBUG', 'false').lower() == 'true',

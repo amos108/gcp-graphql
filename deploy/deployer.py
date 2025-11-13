@@ -68,7 +68,7 @@ class ServiceDeployer:
 
             # Create new tag
             self.repo.create_tag(tag_name, message=f'Deploy {service_name} to {env}')
-            console.print(f'[green]✓[/green] Tagged: {tag_name}')
+            console.print(f'[green]+[/green] Tagged: {tag_name}')
         except Exception as e:
             console.print(f'[dim]Could not create tag: {e}[/dim]')
 
@@ -115,23 +115,23 @@ class ServiceDeployer:
 
         deployed_file.parent.mkdir(parents=True, exist_ok=True)
         deployed_file.write_text(json.dumps(data, indent=2))
-        console.print(f'[green]✓[/green] Updated deployment record')
+        console.print(f'[green]+[/green] Updated deployment record')
 
     async def deploy(self, service_name: str, env: str = 'production',
                      force: bool = False):
         """Main deployment function"""
-        console.print(f'\n[bold]🎯 Deploying {service_name} to {env}[/bold]')
+        console.print(f'\n[bold] Deploying {service_name} to {env}[/bold]')
 
         # Check if service directory exists
         service_path = self.repo_root / 'services' / service_name
         if not service_path.exists():
-            console.print(f'[red]✗ Service not found: {service_name}[/red]')
+            console.print(f'[red]X Service not found: {service_name}[/red]')
             console.print(f'[dim]Path checked: {service_path}[/dim]')
             return
 
         # 1. Get version (git SHA)
         version = self.get_git_sha()
-        console.print(f'[cyan]📦 Version:[/cyan] {version}')
+        console.print(f'[cyan] Version:[/cyan] {version}')
 
         # 2. Check if rebuild needed
         deployment_record = self.load_deployment_record(service_name)
@@ -140,12 +140,12 @@ class ServiceDeployer:
             last_version = deployment_record[env]['version']
 
             if last_version == version:
-                console.print(f'[yellow]✓ Already deployed at {version}, skipping...[/yellow]')
+                console.print(f'[yellow]+ Already deployed at {version}, skipping...[/yellow]')
                 console.print(f'[dim]Use --force to redeploy[/dim]')
                 return
 
             if not self.has_changes(service_name, last_version):
-                console.print(f'[yellow]✓ No changes since {last_version}, skipping...[/yellow]')
+                console.print(f'[yellow]+ No changes since {last_version}, skipping...[/yellow]')
                 console.print(f'[dim]Use --force to redeploy[/dim]')
                 return
 
@@ -153,7 +153,7 @@ class ServiceDeployer:
         try:
             image_name = await self.builder.build_service(service_name, service_path, version)
         except Exception as e:
-            console.print(f'[red]✗ Build failed: {e}[/red]')
+            console.print(f'[red]X Build failed: {e}[/red]')
             return
 
         # 4. Deploy to Cloud Run
@@ -166,7 +166,7 @@ class ServiceDeployer:
                 config=service_config
             )
         except Exception as e:
-            console.print(f'[red]✗ Deployment failed: {e}[/red]')
+            console.print(f'[red]X Deployment failed: {e}[/red]')
             return
 
         # 5. Save deployment record
@@ -175,8 +175,8 @@ class ServiceDeployer:
         # 6. Create git tag
         self.create_git_tag(service_name, version, env)
 
-        console.print(f'\n[bold green]✅ Successfully deployed {service_name}@{version}[/bold green]')
-        console.print(f'[blue]🌐 URL:[/blue] {url}')
+        console.print(f'\n[bold green] Successfully deployed {service_name}@{version}[/bold green]')
+        console.print(f'[blue] URL:[/blue] {url}')
 
         return url
 
@@ -185,7 +185,7 @@ class ServiceDeployer:
         """Deploy multiple services"""
         import asyncio
 
-        console.print(f'\n[bold]🎯 Deploying {len(service_names)} services[/bold]')
+        console.print(f'\n[bold] Deploying {len(service_names)} services[/bold]')
 
         if parallel:
             # Deploy in parallel
@@ -196,19 +196,19 @@ class ServiceDeployer:
             for name in service_names:
                 await self.deploy(name, env)
 
-        console.print('\n[bold green]✅ All deployments complete[/bold green]')
+        console.print('\n[bold green] All deployments complete[/bold green]')
 
     async def rollback(self, service_name: str, to_version: str,
                       env: str = 'production'):
         """Rollback to a previous version"""
-        console.print(f'[yellow]⏪ Rolling back {service_name} to {to_version}...[/yellow]')
+        console.print(f'[yellow] Rolling back {service_name} to {to_version}...[/yellow]')
 
         # Get image from version
         image_name = self.config.get_image_url(service_name, to_version)
 
         # Verify image exists
         if not await self.registry.image_exists(image_name):
-            console.print(f'[red]✗ Image not found: {image_name}[/red]')
+            console.print(f'[red]X Image not found: {image_name}[/red]')
             console.print('[dim]Available versions:[/dim]')
             images = await self.registry.list_images()
             for img in images:
@@ -229,10 +229,10 @@ class ServiceDeployer:
             # Update record
             self.save_deployment_record(service_name, env, to_version, image_name, url)
 
-            console.print(f'[green]✓ Rolled back to {to_version}[/green]')
+            console.print(f'[green]+ Rolled back to {to_version}[/green]')
 
         except Exception as e:
-            console.print(f'[red]✗ Rollback failed: {e}[/red]')
+            console.print(f'[red]X Rollback failed: {e}[/red]')
 
     def list_deployments(self, service_name: Optional[str] = None):
         """List deployed services and versions"""
