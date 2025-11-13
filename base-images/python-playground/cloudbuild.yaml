@@ -1,0 +1,40 @@
+# Cloud Build configuration for Python base image
+
+steps:
+  # Build the image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/base-images/${_IMAGE_NAME}:latest'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/base-images/${_IMAGE_NAME}:${SHORT_SHA}'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+    dir: 'base-images/python-playground'
+
+  # Push the image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/base-images/${_IMAGE_NAME}'
+
+# Images to build
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/base-images/${_IMAGE_NAME}:latest'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/base-images/${_IMAGE_NAME}:${SHORT_SHA}'
+
+# Substitutions
+substitutions:
+  _REGION: 'us-east1'
+  _IMAGE_NAME: 'python-playground'
+
+# Options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+# Timeout
+timeout: '600s'

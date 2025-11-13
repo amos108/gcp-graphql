@@ -1,0 +1,16 @@
+{
+  "project_id": "your-gcp-project-id",
+  "region": "us-central1",
+  "artifact_registry": "services",
+  "environments": {
+    "production": {
+      "domain": "api.yourcompany.com"
+    },
+    "staging": {
+      "domain": "staging-api.yourcompany.com"
+    },
+    "dev": {
+      "domain": "dev-api.yourcompany.com"
+    }
+  }
+}

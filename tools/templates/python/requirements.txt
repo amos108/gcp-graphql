@@ -1,0 +1,10 @@
+# {{SERVICE_NAME}} dependencies
+
+# Web framework
+fastapi>=0.108.0
+uvicorn[standard]>=0.25.0
+
+# GraphQL (if needed)
+strawberry-graphql[fastapi]>=0.217.0
+
+# Playground SDK will be installed from shared/python/playground_sdk

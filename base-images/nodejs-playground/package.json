@@ -1,0 +1,23 @@
+{
+  "name": "nodejs-playground-base",
+  "version": "0.1.0",
+  "description": "Base image for Node.js microservices",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@apollo/server": "^4.10.0",
+    "graphql": "^16.8.1",
+    "@google-cloud/storage": "^7.7.0",
+    "@google-cloud/logging": "^11.0.0",
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/sdk-node": "^0.45.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.45.1",
+    "@opentelemetry/instrumentation-http": "^0.45.1",
+    "@opentelemetry/instrumentation-express": "^0.34.0",
+    "axios": "^1.6.4",
+    "dotenv": "^16.3.1"
+  }
+}

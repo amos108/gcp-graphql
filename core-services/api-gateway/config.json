@@ -1,0 +1,28 @@
+{
+  "memory": "512Mi",
+  "cpu": "1",
+  "timeout": 60,
+  "min_instances": 0,
+  "max_instances": 100,
+  "allow_unauthenticated": true,
+  "env": {
+    "production": {
+      "GCP_PROJECT": "globalwinner",
+      "GCP_REGION": "us-east1",
+      "LOG_LEVEL": "INFO",
+      "DEBUG": "false"
+    },
+    "staging": {
+      "GCP_PROJECT": "globalwinner",
+      "GCP_REGION": "us-east1",
+      "LOG_LEVEL": "DEBUG",
+      "DEBUG": "true"
+    },
+    "dev": {
+      "GCP_PROJECT": "globalwinner",
+      "GCP_REGION": "us-east1",
+      "LOG_LEVEL": "DEBUG",
+      "DEBUG": "true"
+    }
+  }
+}

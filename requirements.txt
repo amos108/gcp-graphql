@@ -1,0 +1,24 @@
+# Google Cloud APIs
+google-cloud-run>=0.10.0
+google-cloud-build>=3.24.0
+google-cloud-artifact-registry>=1.11.0
+google-cloud-storage>=2.14.0
+google-auth>=2.26.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# Git operations
+gitpython>=3.1.40
+
+# Configuration and validation
+pydantic>=2.5.0
+
+# CLI and UI
+typer>=0.9.0
+rich>=13.7.0
+
+# Async HTTP
+httpx>=0.25.0
+
+# Utilities
+python-dotenv>=1.0.0

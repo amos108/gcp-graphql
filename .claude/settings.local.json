@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(gcloud config:*)",
+      "Bash(powershell -Command \"gcloud config get-value project\")",
+      "Bash(powershell -Command \"gcloud config get-value compute/region\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

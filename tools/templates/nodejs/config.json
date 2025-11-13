@@ -1,0 +1,18 @@
+{
+  "memory": "512Mi",
+  "cpu": "1",
+  "timeout": 60,
+  "min_instances": 0,
+  "max_instances": 100,
+  "allow_unauthenticated": true,
+  "env": {
+    "production": {
+      "NODE_ENV": "production",
+      "LOG_LEVEL": "info"
+    },
+    "staging": {
+      "NODE_ENV": "staging",
+      "LOG_LEVEL": "debug"
+    }
+  }
+}
