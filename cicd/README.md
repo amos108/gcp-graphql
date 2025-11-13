@@ -39,7 +39,7 @@ python -m cicd.cli list
 
 Output:
 ```
-Build Triggers in globalwinner
+Build Triggers in true-ability-399619 
 
 build-python-base-image
   ID: abc123...
@@ -98,7 +98,7 @@ steps:
     args: ['push', '...']
 
 images:
-  - 'us-east1-docker.pkg.dev/globalwinner/base-images/python-playground:latest'
+  - 'us-east1-docker.pkg.dev/true-ability-399619 /base-images/python-playground:latest'
 
 substitutions:
   _REGION: 'us-east1'

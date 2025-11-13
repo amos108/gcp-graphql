@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
 
     # Initialize service registry
     app.state.registry = ServiceRegistry(
-        project_id=os.getenv('GCP_PROJECT', 'globalwinner'),
+        project_id=os.getenv('GCP_PROJECT', 'true-ability-399619 '),
         region=os.getenv('GCP_REGION', 'us-east1')
     )
 

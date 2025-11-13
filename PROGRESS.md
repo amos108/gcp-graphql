@@ -191,4 +191,4 @@ python -m deploy.cli info
 
 ---
 
-**Project configured for**: globalwinner (us-east1)
+**Project configured for**: true-ability-399619  (us-east1)

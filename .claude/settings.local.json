@@ -4,7 +4,12 @@
       "WebSearch",
       "Bash(gcloud config:*)",
       "Bash(powershell -Command \"gcloud config get-value project\")",
-      "Bash(powershell -Command \"gcloud config get-value compute/region\")"
+      "Bash(powershell -Command \"gcloud config get-value compute/region\")",
+      "Bash(terraform init:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m pip install:*)",
+      "Bash(powershell:*)",
+      "Bash(gcloud builds list:*)"
     ],
     "deny": [],
     "ask": []

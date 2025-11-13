@@ -67,7 +67,7 @@ resource "google_artifact_registry_repository" "base_images" {
 
 # Cloud Storage bucket for Cloud Build sources
 resource "google_storage_bucket" "cloudbuild" {
-  name          = "${var.project_id}_cloudbuild"
+  name          = "${var.project_id}-cloudbuild-v2"
   location      = var.region
   force_destroy = true
 

@@ -14,10 +14,6 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy playground SDK
-COPY ../../shared/python/playground_sdk ./playground_sdk
-RUN pip install -e ./playground_sdk
-
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080

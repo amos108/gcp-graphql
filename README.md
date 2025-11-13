@@ -222,7 +222,7 @@ Plus component-specific guides in each directory.
 
 ## 🎯 Configuration
 
-**Project**: globalwinner
+**Project**: true-ability-399619 
 **Region**: us-east1
 
 All configured and ready to use!

@@ -329,7 +329,7 @@ gcp-graphql/
 
 ## 🎯 Configuration
 
-**Project**: globalwinner
+**Project**: true-ability-399619 
 **Region**: us-east1
 
 All components configured and ready!

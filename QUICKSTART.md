@@ -15,7 +15,7 @@ Your project is already configured:
 
 ```json
 {
-  "project_id": "globalwinner",
+  "project_id": "true-ability-399619 ",
   "region": "us-east1"
 }
 ```
@@ -24,7 +24,7 @@ Verify gcloud is set up:
 
 ```bash
 gcloud config get-value project
-# Should output: globalwinner
+# Should output: true-ability-399619 
 ```
 
 ## Step 2: Deploy Infrastructure
@@ -85,7 +85,7 @@ python -m deploy.cli info
 You should see:
 ```
 Configuration
-Project ID: globalwinner
+Project ID: true-ability-399619 
 Region: us-east1
 Artifact Registry: services
 ```

@@ -67,7 +67,7 @@ cd base-images
 ```bash
 cd base-images/python-playground
 gcloud builds submit \
-  --tag us-east1-docker.pkg.dev/globalwinner/base-images/python-playground:latest
+  --tag us-east1-docker.pkg.dev/true-ability-399619 /base-images/python-playground:latest
 ```
 
 ## Using Base Images in Services
@@ -75,7 +75,7 @@ gcloud builds submit \
 Services automatically use base images when deployed with buildpacks or can reference them in Dockerfiles:
 
 ```dockerfile
-FROM us-east1-docker.pkg.dev/globalwinner/base-images/python-playground:latest
+FROM us-east1-docker.pkg.dev/true-ability-399619 /base-images/python-playground:latest
 
 COPY src/ ./src/
 CMD ["python", "-m", "src.main"]

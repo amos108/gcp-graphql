@@ -15,7 +15,7 @@ pip install -e ../../shared/python/playground_sdk
 
 # Set environment variables
 export SERVICE_NAME={{SERVICE_NAME}}
-export GCP_PROJECT=globalwinner
+export GCP_PROJECT=true-ability-399619 
 export GCP_REGION=us-east1
 export DEBUG=true
 

@@ -15,14 +15,14 @@ Step-by-step guide to deploy your GCP Microservices Playground.
 ```bash
 # Check current project
 gcloud config get-value project
-# Should output: globalwinner
+# Should output: true-ability-399619 
 
 # Check region
 gcloud config get-value compute/region
 # Should output: us-east1
 
 # If not set correctly:
-gcloud config set project globalwinner
+gcloud config set project true-ability-399619 
 gcloud config set compute/region us-east1
 ```
 

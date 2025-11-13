@@ -147,13 +147,13 @@ gcloud run services describe <service-name> --region=us-east1
 gcloud run services list --region=us-east1
 
 # List container images
-gcloud artifacts docker images list us-east1-docker.pkg.dev/globalwinner/services
+gcloud artifacts docker images list us-east1-docker.pkg.dev/true-ability-399619 /services
 
 # View current project
 gcloud config get-value project
 
 # Set project
-gcloud config set project globalwinner
+gcloud config set project true-ability-399619 
 
 # Set region
 gcloud config set compute/region us-east1
@@ -213,10 +213,10 @@ gcloud beta billing budgets list --billing-account=<account-id>
 
 ```bash
 # List IAM roles
-gcloud projects get-iam-policy globalwinner
+gcloud projects get-iam-policy true-ability-399619 
 
 # Grant role to service account
-gcloud projects add-iam-policy-binding globalwinner \
+gcloud projects add-iam-policy-binding true-ability-399619  \
   --member="serviceAccount:..." \
   --role="roles/..."
 

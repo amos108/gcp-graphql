@@ -280,7 +280,7 @@ gcp-graphql/
 
 ## 🎯 Configuration
 
-**Project**: globalwinner
+**Project**: true-ability-399619 
 **Region**: us-east1
 
 All components configured and integrated!
@@ -445,6 +445,6 @@ You've successfully built a **production-ready, cost-effective, developer-friend
 
 *Built with ❤️ using Google Cloud Platform*
 
-*Project: globalwinner*
+*Project: true-ability-399619 *
 *Region: us-east1*
 *Status: Production-Ready ✅*

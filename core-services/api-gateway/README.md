@@ -101,7 +101,7 @@ cd core-services/api-gateway
 pip install -r requirements.txt
 
 # Set environment
-export GCP_PROJECT=globalwinner
+export GCP_PROJECT=true-ability-399619 
 export GCP_REGION=us-east1
 export DEBUG=true
 
@@ -144,7 +144,7 @@ Edit `config.json`:
   "allow_unauthenticated": true,
   "env": {
     "production": {
-      "GCP_PROJECT": "globalwinner",
+      "GCP_PROJECT": "true-ability-399619 ",
       "GCP_REGION": "us-east1",
       "LOG_LEVEL": "INFO"
     }

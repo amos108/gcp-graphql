@@ -506,7 +506,7 @@ gcp-graphql/
 **config.json** (project root):
 ```json
 {
-  "project_id": "globalwinner",
+  "project_id": "true-ability-399619 ",
   "region": "us-east1"
 }
 ```
