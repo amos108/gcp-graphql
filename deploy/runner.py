@@ -26,90 +26,74 @@ class CloudRunDeployer:
 
         console.print(f'[cyan] Deploying {service_name} to {env}...[/cyan]')
 
-        # Construct service resource name
-        parent = f'projects/{self.config.project_id}/locations/{self.config.region}'
-        service_path = f'{parent}/services/{service_name}'
+        # Try using gcloud CLI as it's more reliable
+        return await self._deploy_with_gcloud(service_name, image, env, config)
 
-        # Build environment variables
+    async def _deploy_with_gcloud(self, service_name: str, image: str, env: str, config: Dict) -> str:
+        """Deploy service using gcloud CLI (fallback method)"""
+        import subprocess
+        import sys
+
+        # Build gcloud command parts
+        cmd_parts = [
+            'gcloud', 'run', 'deploy', service_name,
+            '--image', image,
+            '--region', self.config.region,
+            '--project', self.config.project_id,
+            '--platform', 'managed',
+            '--memory', config.get('memory', '512Mi'),
+            '--cpu', config.get('cpu', '1'),
+            '--timeout', str(config.get('timeout', 60)),
+            '--min-instances', str(config.get('min_instances', 0)),
+            '--max-instances', str(config.get('max_instances', 100)),
+            '--quiet'
+        ]
+
+        # Add environment variables
         env_vars = self._build_env_vars(config, env)
+        if env_vars:
+            env_str = ','.join([f'{var.name}={var.value}' for var in env_vars])
+            # Properly quote env vars for PowerShell to prevent concatenation
+            cmd_parts.extend(['--set-env-vars', f'"{env_str}"'])
 
-        # Create service specification
-        service = Service()
-        service.template.containers = [
-            Container(
-                image=image,
-                env=env_vars,
-                resources=run_v2.ResourceRequirements(
-                    limits={
-                        'memory': config.get('memory', '512Mi'),
-                        'cpu': config.get('cpu', '1')
-                    }
-                )
-            )
-        ]
-
-        # Scaling configuration
-        service.template.scaling = run_v2.RevisionScaling(
-            min_instance_count=config.get('min_instances', 0),
-            max_instance_count=config.get('max_instances', 100)
-        )
-
-        # Timeout
-        service.template.timeout = f"{config.get('timeout', 60)}s"
-
-        # Traffic routing (100% to latest revision)
-        service.traffic = [
-            TrafficTarget(
-                type_=run_v2.TrafficTargetAllocationType.TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST,
-                percent=100
-            )
-        ]
-
-        # Check if service exists
-        service_exists = await self._service_exists(service_path)
-
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-            transient=True
-        ) as progress:
-            task = progress.add_task(
-                f"{'Updating' if service_exists else 'Creating'} {service_name}...",
-                total=None
-            )
-
-            try:
-                if service_exists:
-                    # Update existing service
-                    operation = self.client.update_service(
-                        service=service
-                    )
-                else:
-                    # Create new service
-                    operation = self.client.create_service(
-                        parent=parent,
-                        service=service,
-                        service_id=service_name
-                    )
-
-                # Wait for operation to complete
-                result = operation.result(timeout=600)  # 10 min timeout
-
-            except Exception as e:
-                console.print(f'[red]X Deployment failed: {e}[/red]')
-                raise
-
-        # Get service URL
-        url = result.uri
-
-        console.print(f'[green]+ Deployed to {url}[/green]')
-
-        # Set IAM policy for public access (if configured)
+        # Add public access if configured
         if config.get('allow_unauthenticated', True):
-            await self._set_public_access(service_path)
+            cmd_parts.append('--allow-unauthenticated')
 
-        return url
+        try:
+            # On Windows, use powershell to run gcloud
+            if sys.platform == 'win32':
+                # Use array form to prevent argument mangling
+                cmd_str = ' '.join(cmd_parts)
+                cmd = ['powershell', '-Command', cmd_str]
+            else:
+                cmd = cmd_parts
+
+            # Run gcloud command
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+
+            # Get service URL
+            url = await self._get_service_url(service_name)
+
+            console.print(f'[green]+ Deployed to {url}[/green]')
+            if config.get('allow_unauthenticated', True):
+                console.print('[dim]+ Enabled public access[/dim]')
+
+            return url
+
+        except subprocess.CalledProcessError as e:
+            console.print(f'[red]X gcloud deploy failed: {e.stderr}[/red]')
+            raise RuntimeError(f"Deployment failed: {e.stderr}")
+
+    async def _get_service_url(self, service_name: str) -> str:
+        """Get URL for a deployed service"""
+        service_path = f'projects/{self.config.project_id}/locations/{self.config.region}/services/{service_name}'
+
+        try:
+            service = self.client.get_service(name=service_path)
+            return service.uri
+        except:
+            return f'https://{service_name}-{self.config.project_id}.{self.config.region}.run.app'
 
     async def _service_exists(self, service_path: str) -> bool:
         """Check if service already exists"""

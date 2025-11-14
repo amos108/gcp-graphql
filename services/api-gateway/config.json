@@ -1,0 +1,29 @@
+{
+  "memory": "512Mi",
+  "cpu": "1",
+  "timeout": 60,
+  "min_instances": 0,
+  "max_instances": 100,
+  "allow_unauthenticated": true,
+  "env": {
+    "production": {
+      "GCP_PROJECT": "true-ability-399619 ",
+      "GCP_REGION": "us-east1",
+      "LOG_LEVEL": "INFO",
+      "DEBUG": "false",
+      "RUN_STORAGE_URL": "https://run-storage-service-z4jatjmhea-ue.a.run.app"
+    },
+    "staging": {
+      "GCP_PROJECT": "true-ability-399619 ",
+      "GCP_REGION": "us-east1",
+      "LOG_LEVEL": "DEBUG",
+      "DEBUG": "true"
+    },
+    "dev": {
+      "GCP_PROJECT": "true-ability-399619 ",
+      "GCP_REGION": "us-east1",
+      "LOG_LEVEL": "DEBUG",
+      "DEBUG": "true"
+    }
+  }
+}

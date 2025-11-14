@@ -59,11 +59,18 @@ class CloudBuilder:
         # Check if Dockerfile exists
         dockerfile_path = service_path / 'Dockerfile'
         if dockerfile_path.exists():
-            # Use Docker build
+            # Use Docker build with layer caching
+            # --cache-from enables reuse of layers from previous builds
+            # Docker ignores missing cache sources, so this is safe even for first builds
             build.steps = [
                 BuildStep(
                     name='gcr.io/cloud-builders/docker',
-                    args=['build', '-t', image_name, '.']
+                    args=[
+                        'build',
+                        '-t', image_name,
+                        '--cache-from', image_name,  # Use previous build as cache
+                        '.'
+                    ]
                 )
             ]
         else:
@@ -147,8 +154,14 @@ class CloudBuilder:
         tar_buffer = io.BytesIO()
 
         with tarfile.open(fileobj=tar_buffer, mode='w:gz') as tar:
-            # Add all files in source directory
+            # Add all files in service directory
             tar.add(source_path, arcname='.')
+
+            # Add shared Python SDK if it exists (for services that need it)
+            project_root = source_path.parent.parent  # Go up from services/<service-name>
+            shared_sdk_path = project_root / 'shared' / 'python'
+            if shared_sdk_path.exists():
+                tar.add(shared_sdk_path, arcname='shared/python')
 
         # Upload to GCS
         blob = bucket.blob(object_name)

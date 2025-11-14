@@ -173,6 +173,17 @@ def images(
 
 
 @app.command()
+def delete(
+    service: str = typer.Argument(..., help='Service name to delete')
+):
+    """Delete a service from Cloud Run"""
+    config = load_config()
+    deployer = ServiceDeployer(config)
+
+    asyncio.run(deployer.runner.delete_service(service))
+
+
+@app.command()
 def info():
     """Show configuration information"""
     config = load_config()

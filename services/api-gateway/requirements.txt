@@ -1,0 +1,29 @@
+# API Gateway dependencies
+
+# Web framework
+fastapi>=0.108.0
+uvicorn[standard]>=0.25.0
+
+# GraphQL
+strawberry-graphql[fastapi]>=0.217.0
+
+# HTTP client for calling services
+httpx>=0.25.0
+
+# Google Cloud
+google-cloud-run>=0.10.0
+google-cloud-logging>=3.9.0
+
+# OpenTelemetry
+opentelemetry-api>=1.21.0
+opentelemetry-sdk>=1.21.0
+opentelemetry-exporter-gcp-trace>=1.6.0
+opentelemetry-instrumentation-fastapi>=0.42b0
+opentelemetry-instrumentation-httpx>=0.44b0
+
+# Utilities
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+
+# Playground SDK (installed from local path)

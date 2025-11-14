@@ -1,0 +1,60 @@
+# Cloud Build configuration for API Gateway
+
+steps:
+  # Build image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/services/api-gateway:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/services/api-gateway:latest'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+    dir: 'core-services/api-gateway'
+
+  # Push image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/services/api-gateway'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'api-gateway'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/services/api-gateway:${SHORT_SHA}'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '100'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--set-env-vars'
+      - 'GCP_PROJECT=${PROJECT_ID},GCP_REGION=${_REGION}'
+
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/services/api-gateway:${SHORT_SHA}'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/services/api-gateway:latest'
+
+substitutions:
+  _REGION: 'us-east1'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '600s'
